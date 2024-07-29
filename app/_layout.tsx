@@ -1,37 +1,24 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
-
-import { useColorScheme } from '@/hooks/useColorScheme';
-
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import Header from "@/components/Header";
+import { Stack } from "expo-router";
 
 export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
-
-  useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
-
-  if (!loaded) {
-    return null;
-  }
-
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </ThemeProvider>
+    /* 
+      Como forma de otimizar e padronizar o meu código, eu crio um unico componente
+      que servirá de cabeçalho para toda a navegação das rotas deste arquivo.
+      O truque é fazer o componente Header() aparecer igualmente como cabeçalho
+      em qualquer pagina da minha navegação em Stack
+    */
+    <Stack screenOptions={{
+      /*
+        O cabeçalho em um sistema de rotas no ReactNative por natureza
+        passa parametros do tipo NativeStackHeaderProps toda vez que uma ação é feita
+        esse tipo vem do proprio React, o que nós vamos fazer é usar isso a nosso favor
+      */
+      header: Header
+    }}>
+      <Stack.Screen name="(groups)/index" />
+      <Stack.Screen name="(groups)/newGroup" />
+    </Stack>
   );
 }
