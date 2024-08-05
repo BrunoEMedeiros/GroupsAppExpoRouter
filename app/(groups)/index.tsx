@@ -130,9 +130,9 @@ export default function Groups()
                 <FlatList 
                         style={{marginBottom: 12}}
                         data={groups}
-                        keyExtractor={item => item.id.toString()}
+                        keyExtractor={(item) => item.id.toString()}
                         renderItem={({item}) =>{
-                            return <GroupCard title={item.nome} /> 
+                            return <GroupCard groupId={item.id} title={item.nome} /> 
                         }}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={groups.length === 0 && {flex: 1}}

@@ -9,17 +9,18 @@ type Props = {
 }
 
 type PropsButtonIcons = PressableProps & {
-    //Como o MaterialIcons é uma lib externa ao expo, suas propriedades e tipo
-    //não são passados diretamente pelo sistema, ao inves disso, fazemos um
-    //mapeamento da biblioteca
+    /*
+        Como o MaterialIcons é uma lib externa ao expo, suas propriedades e tipo
+        não são passados diretamente pelo sistema, ao inves disso, fazemos um
+        mapeamento da biblioteca.
+    */
+
     icon: keyof typeof MaterialIcons.glyphMap
     type?: ButtonIconTypeStyleProps
 }
 
 export default function ButtonIcon({icon, type='PRIMARY', ...rest}: PropsButtonIcons){
     return(
-        // passar ...rest para o styled component serve para passar qualquer evento
-        // atribuido por quem chamar o component ButtonIcon para ca
         <Container {...rest}>
             <Icon name={icon} type="PRIMARY" />
         </Container>
@@ -35,6 +36,7 @@ const Container = styled.Pressable`
 
     margin-left: 12px;
 `
+// Assim eu acesso diretamente os atributos do icone que vem de MaterialIcons
 const Icon = styled(MaterialIcons).attrs<Props>(({theme, type}) => ({
     size: 24,
     color: type === 'PRIMARY' ? theme.COLORS.GREEN_700 : theme.COLORS.RED

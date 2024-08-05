@@ -22,9 +22,8 @@ type PropsStyled = {
 
 type PropsButton = PressableProps & {
     title: string;
+    
     // ? significa opcional, ou seja eu não sou obrigado a passar
-    // a propriedade type
-
     type?: ButtonTypeStyleProps;
 }
 

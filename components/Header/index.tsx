@@ -6,10 +6,12 @@ import styled, { ThemeProvider } from "styled-components/native"
 
 export default function Header(props: NativeStackHeaderProps){
 
-    //Essa função checa se é possivel voltar para uma tela anterior na 
-    //pilha(Stack) de telas lembre-se que a decisão de qual tela pode navegar 
-    //para qual é totalmente sua se vc usar o push, sera possivel voltar, 
-    //se usar o replace, não
+    /*
+        Essa função checa se é possivel voltar para uma tela anterior na 
+        pilha (Stack) de telas, mas lembre-se que a decisão de qual tela pode navegar 
+        para qual é totalmente sua:
+        Se vc usar o push, sera possivel voltar, se usar o replace, não
+    */
     const canGoBack = props.navigation.canGoBack();
 
     //Uma outra forma de criar uma função, nesse caso para voltar pra a pagina anterior
@@ -26,7 +28,7 @@ export default function Header(props: NativeStackHeaderProps){
 
     return(
         <ThemeProvider theme={theme}>
-            {/* Caso haja a possibilidade de voltar */}
+            {/* Caso seja possivel voltar */}
             <Container>
                 { 
                     canGoBack ?

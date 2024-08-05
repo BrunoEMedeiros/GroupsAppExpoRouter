@@ -10,10 +10,10 @@ import axios from 'axios'
     objeto ou repete blocos de código em varios lugares sem motivo.
     Para facilitar a manutenção e ajustes, eu crio apenas uma instancia do axios
     para todo o projeto e exporto ela para o resto.
-    Nesse caso mais basico, eu estou passando apenas a URL, porem futuramente
+    Nesse caso mais basico, eu estou passando apenas a URL basica, porem futuramente
     eu vou adicionar mais configurações aqui.
 */
 
 export const apiConfig = axios.create({
-    baseURL : 'http://192.168.1.5:3000'
+    baseURL : 'http://192.168.1.7:3000'
 })
