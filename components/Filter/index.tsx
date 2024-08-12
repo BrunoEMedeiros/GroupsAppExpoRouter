@@ -50,11 +50,10 @@ const Container = styled.Pressable<FilterStyleProps>`
     border-radius: 4px;
     margin-right: 12px;
 
-    height: 38px;
-    width: 70px;
-
     align-items: center;
     justify-content: center;
+
+    padding: 10px;
 `;
 
 const Title = styled.Text`
@@ -63,5 +62,4 @@ const Title = styled.Text`
         font-size: ${theme.FONT_SIZE.MD}px;
         color: ${theme.COLORS.WHITE}
     `}
-
 `;

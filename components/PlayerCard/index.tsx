@@ -1,6 +1,7 @@
 import { MaterialIcons } from "@expo/vector-icons";
 import { Colors } from "react-native/Libraries/NewAppScreen";
 import styled, { css } from "styled-components/native";
+import ButtonIcon from "../ButtonIcon";
 
 type Props = {
     name: string
@@ -10,6 +11,10 @@ export default function PlayerCard({name}: Props){
     return(<Container>
         <Icon name="person" />
         <Name>{name}</Name>
+        <ButtonIcon 
+            icon="close"
+            type="SECONDARY"
+        />
     </Container>)
 }
 

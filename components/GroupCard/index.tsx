@@ -1,7 +1,9 @@
 import { Link } from "expo-router"
 import { UsersThree } from "phosphor-react-native"
-import { PressableProps } from "react-native"
+import { Alert, PressableProps } from "react-native"
 import styled from "styled-components/native"
+import ButtonIcon from "../ButtonIcon"
+import { apiConfig } from "@/api/axios"
 
 /*
     O truque aqui é tranformar o component todo em um objeto clicavel/pressionavel
@@ -15,21 +17,64 @@ import styled from "styled-components/native"
 type Props = PressableProps & {
     groupId: number
     title: string
+    funcao: Function
 }
 /* 
     Aqui alem de um "title" que é um parametro string normal, eu uso o
     ...rest(spread operator) que significa: qualquer outro parametro que venha do tipo
     PressableProps vai estar contido dentro dele
 */
-export default function GroupCard({groupId, title, ...rest }: Props){
+
+const deleteGroup = async (id: number, title: string, atualizarLista: Function) => {
+    try {
+        return Alert.alert(`Excluir grupo`,
+            `Deseja excluir o grupo ${title}`,
+        [
+            {
+                text: 'Excluir',
+                onPress: async ()=>{
+                    const res = await apiConfig.delete(`/groups/${id}`)
+                    if(res.status != 200)
+                    {
+                        Alert.alert('Erro',
+                                'Erro ao excluir grupo, tente novamente mais tarde',
+                            [
+                                {
+                                    text: 'Ok'
+                                }
+                            ])
+                    }
+                    else{
+                        const controller = new AbortController();
+                        atualizarLista(controller)
+                    }
+                },
+            
+            },
+            {  
+                text: 'Cancelar',
+                style: 'cancel'
+            }
+        ])
+    } catch (error) {
+        console.error('error ' , error)
+    }
+}
+
+export default function GroupCard({groupId, title, funcao, ...rest }: Props){
     return(
         <Link href={{
             pathname: "/(players)",
             params: {groupId: groupId, title: title}
         }} asChild>
             <Container>
-                <Icon />
-                <Title>{title}</Title>
+                <LeftBox>
+                    <Icon />
+                    <Title>{title}</Title>
+                </LeftBox>
+                <ButtonIcon icon="delete" type="SECONDARY" onPress={()=> 
+                    deleteGroup(groupId, title, funcao)}
+                />
             </Container>
         </Link>
     )
@@ -48,6 +93,7 @@ const Container = styled.Pressable`
 
     flex-direction: row;
     align-items: center;
+    justify-content: space-between;
 `
 const Title = styled.Text`
     font-size: ${({ theme }) => theme.FONT_SIZE.LG}px;
@@ -60,4 +106,9 @@ const Icon = styled(UsersThree).attrs(({theme}) => ({
     weight: 'fill'
 }))`
     margin-right: 10px;
+`
+
+const LeftBox = styled.View`
+    flex-direction: row;
+    align-items: center;
 `

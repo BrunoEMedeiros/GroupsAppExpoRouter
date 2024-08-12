@@ -22,19 +22,19 @@ type PropsButtonIcons = PressableProps & {
 export default function ButtonIcon({icon, type='PRIMARY', ...rest}: PropsButtonIcons){
     return(
         <Container {...rest}>
-            <Icon name={icon} type="PRIMARY" />
+            <Icon name={icon} type={type} />
         </Container>
     )
 }
 
 const Container = styled.Pressable`
-    width: 56px;
+    width: 40px;
     height: 56px;
 
     justify-content: center;
     align-items: center;
 
-    margin-left: 12px;
+    margin-left: 8px;
 `
 // Assim eu acesso diretamente os atributos do icone que vem de MaterialIcons
 const Icon = styled(MaterialIcons).attrs<Props>(({theme, type}) => ({

@@ -4,6 +4,7 @@ import Filter from "@/components/Filter";
 import HighLight from "@/components/HighLight";
 import Input from "@/components/Input";
 import PlayerCard from "@/components/PlayerCard";
+import TitleWithEdit from "@/components/TitleWithEdit";
 import theme from "@/theme";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
@@ -26,7 +27,7 @@ export default function Players(){
     
     // Aqui eu uso o método do expo-router pra pegar os parametros que vem da rota
     // sempre que voce passar parametros para uma rota, não se esqueca do id
-    const {groupId, title} = useLocalSearchParams()
+    const {groupId, title} = useLocalSearchParams<{groupId: string, title: string}>()
     const [teams, setTeams] = useState<Teams[]>([])
     const [isActiveTeam, setIsActiveTeam] = useState<Teams>()
     
@@ -64,36 +65,40 @@ export default function Players(){
     return(
         <ThemeProvider theme={theme}>
             <Container>
-            <HighLight 
-                title={title?.toString()}
-                subtitle="Adicione a galera do time!"
-            />
+            <TitleWithEdit groupId={parseInt(groupId)} title={title?.toString()} />
             <Form>
                 <Input placeholder="Crie um novo time" autoCorrect={false} />
                 <ButtonIcon icon="add"/>
             </Form>
-            <TeamsView>
-                <FlatList 
-                    data={teams}
-                    keyExtractor={(item) => item.id.toString()}
-                    horizontal={true}
-                    renderItem={({item}) =>{
-                        return(
-                        <Filter 
-                            title={item.nome} 
-                            isActive={item === isActiveTeam}
-                            onPress={()=> selectTeam(item)}
-                        />)
-                    }}
-                    showsVerticalScrollIndicator={false}
-                    ListEmptyComponent={<EmptyListText>Coloque alguns times!</EmptyListText>}
-                    ItemSeparatorComponent={()=> (
-                        <View style={{height: 10}}></View>
-                    )}
-                />
-                <NumberOfPlayers>{teams.length}</NumberOfPlayers>
-            </TeamsView>
-            <FlatList
+            { 
+                teams.length > 0 ?
+                <TeamsView>
+                    <FlatList 
+                        data={teams}
+                        keyExtractor={(item) => item.id.toString()}
+                        horizontal={true}
+                        renderItem={({item}) =>{
+                            return(
+                            <Filter 
+                                title={item.nome} 
+                                isActive={item === isActiveTeam}
+                                onPress={()=> selectTeam(item)}
+                            />)
+                        }}
+                        showsVerticalScrollIndicator={false}
+                        ListEmptyComponent={null}
+                        ItemSeparatorComponent={()=> (
+                            <View style={{height: 10}}></View>
+                        )}
+                        />
+                    <NumberOfPlayers>{teams.length}</NumberOfPlayers>
+                </TeamsView>
+                :
+                null
+            }
+            {
+            teams.length > 0 ?
+                <FlatList
                 style={{ flex: 1, height: '100%'}} 
                 data={players}
                 keyExtractor={(item) => item.id.toString()}
@@ -117,7 +122,12 @@ export default function Players(){
                 ItemSeparatorComponent={()=> (
                     <View style={{height: 10}}></View>
                 )}
-            />
+                />  
+            :
+            <EmptyListView>
+                <EmptyListText>Crie alguns times!</EmptyListText>
+            </EmptyListView>
+            }
             </Container>
         </ThemeProvider>
     )

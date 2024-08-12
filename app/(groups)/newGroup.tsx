@@ -89,7 +89,12 @@ export default function NewGroup()
                 <Controller 
                     name="className"
                     control={control}
-                    rules={{required: true, maxLength: 10}}
+                    rules={{required: true, maxLength: 20,
+                        validate: (value)=>{
+                            const trimmedValue = value.trim();
+                            return trimmedValue !== "" || "class name cannot be empty";
+                        }
+                    }}
                     render={({ field: { onChange, onBlur, value }}) => (
                         <Input       
                             placeholder="Nome da turma"
@@ -99,11 +104,11 @@ export default function NewGroup()
                         />  
                     )}
                 />
-                {errors.className?.type == "required" ? (
+                {errors.className?.type == "required" || errors.className?.message ? (
                     <ErrorMessage>Campo obrigatório</ErrorMessage>
                 )
                 : errors.className?.type == "maxLength" && (
-                    <ErrorMessage>Maximo de 10 caracteres</ErrorMessage>
+                    <ErrorMessage>Maximo de 20 caracteres</ErrorMessage>
                 )}
 
                 {/* 

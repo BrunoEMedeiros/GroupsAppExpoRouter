@@ -132,7 +132,11 @@ export default function Groups()
                         data={groups}
                         keyExtractor={(item) => item.id.toString()}
                         renderItem={({item}) =>{
-                            return <GroupCard groupId={item.id} title={item.nome} /> 
+                            return <GroupCard 
+                                    groupId={item.id} 
+                                    title={item.nome}
+                                    funcao={loadData}
+                                    /> 
                         }}
                         showsVerticalScrollIndicator={false}
                         contentContainerStyle={groups.length === 0 && {flex: 1}}
