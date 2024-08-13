@@ -6,6 +6,20 @@ import { Alert } from "react-native"
 import { router } from "expo-router"
 import { apiConfig } from "@/api/axios"
 
+/*
+    LEIA ------------- IMPORTANTE ------------------ LEIA
+    
+    Esse componente tem uma proposta diferente dos outos desse projeto,
+    o que eu quero aqui é ter um componente que serve como campo de edição sem
+    mudar de pagina ou abrir um modal.
+    Não seria problematico seguir por essas linhas, mas eu quis demonstrar uma outra
+    interprertação de single-page, como a ideia desse design é permitir que o usuario
+    resolva todas as ações em no maximo 2 cliques, acabou ficando um pouco complexo
+    mas tem um resultado visual positivo.
+
+
+*/
+
 export type TextInputStyleProp = {
     isActive?: boolean
 }
@@ -21,6 +35,12 @@ type Props = TextInputStyleProp & {
 
 export default function TitleWithEdit({ isActive=false, groupId, title}: Props){
 
+    /*
+        Aqui eu uso a mesma lógica da pagina /(groups)/newGroup.tsx com o
+        react-hook-forms para validar o meu TextInput personalizado, e tentar evitar
+        dados incompletos ou falhos de serem enviados para a rota na API
+    */
+    
     const [onEditMode, setOnEditMode] = useState(isActive)
 
     const { 
@@ -37,7 +57,22 @@ export default function TitleWithEdit({ isActive=false, groupId, title}: Props){
                 nome: data.className
             });
 
-            // Se a inserção der certo, volta para a tela anterior
+            /*
+                Perceba que eu usei a mesma lógica da pagina /(groups)/newGroup.tsx
+                porem, por que eu fiz isso ao invés de simplesmente atualizar a pagina
+                como eu fiz na /(groups)/index quando eu excluo um grupo ?
+                Simples, se voce prestar atenção o nome e o id do Group vem pela rota
+                do expo-router e não do back-end propriamente dito, seria muito
+                disperdicio eu criar uma rota só pra retornar um campo que é o nome,
+                sendo que eu ja tenho ele na pagina /(groups)/index e eu posso simples-
+                mente passar ele para frente pela propria rota do expo-router.
+                Ao fazer o componente disparar router.back() esse componente vai forçar
+                qualquer lugar que esteja chamando ele na tela a voltar para a pagina
+                anterior, eu me utilizo do useFocusEffect que esta na pagina 
+                /(groups)/index que faz com o get de Groups seja refeito toda vez
+                que a pagina entrar em foco.
+            */
+
             if(res.status == 200){
                 router.back()
             }
@@ -62,7 +97,7 @@ export default function TitleWithEdit({ isActive=false, groupId, title}: Props){
             ) 
         }
     }
-
+    
     return(
         <Container>
             <TitleBox>

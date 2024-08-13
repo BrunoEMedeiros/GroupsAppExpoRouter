@@ -1,7 +1,6 @@
 import { apiConfig } from "@/api/axios";
 import ButtonIcon from "@/components/ButtonIcon";
 import Filter from "@/components/Filter";
-import HighLight from "@/components/HighLight";
 import Input from "@/components/Input";
 import PlayerCard from "@/components/PlayerCard";
 import TitleWithEdit from "@/components/TitleWithEdit";
@@ -65,6 +64,15 @@ export default function Players(){
     return(
         <ThemeProvider theme={theme}>
             <Container>
+            {/*  
+                Nesse caso eu precisei isolei a lógica do react-hook-forms
+                e suas validações dentro do componente TitleWithEdit porque 
+                existem outros inputs dentro dessa pagina, e não é legal deixar 
+                varias funções de submit dentro de uma mesma pagina.
+                Submit é a ação de enviar um formulario geralmente para uma rota
+                ou outra pagina, por si ela não é uma ação nociva ao sistema,
+                mais pela natureza do "envio" ter varios em um mesmo arquivo não é bom
+            */}
             <TitleWithEdit groupId={parseInt(groupId)} title={title?.toString()} />
             <Form>
                 <Input placeholder="Crie um novo time" autoCorrect={false} />

@@ -91,6 +91,7 @@ export default function NewGroup()
                     control={control}
                     rules={{required: true, maxLength: 20,
                         validate: (value)=>{
+                            //Uso o método trim() para tirar espaços em branco
                             const trimmedValue = value.trim();
                             return trimmedValue !== "" || "class name cannot be empty";
                         }
