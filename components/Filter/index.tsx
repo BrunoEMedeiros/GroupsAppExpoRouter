@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { PressableProps } from "react-native";
 import styled, { css } from "styled-components/native"
 
@@ -21,7 +20,7 @@ type Props = PressableProps & FilterStyleProps & {
     parametros que voce colocar, como qualquer outra coisa adicional
 */
 export default function Filter({isActive=false, title, ...rest}: Props){
-
+    
     return(
         <Container 
             isActive={isActive}

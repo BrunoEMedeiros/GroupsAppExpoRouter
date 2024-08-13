@@ -1,35 +1,36 @@
 import { apiConfig } from "@/api/axios";
-import ButtonIcon from "@/components/ButtonIcon";
+import Button from "@/components/Button";
 import Filter from "@/components/Filter";
-import Input from "@/components/Input";
+import InputNewPlayer from "@/components/InputNewPlayer";
+import InputNewTeam from "@/components/InputNewTeam";
 import PlayerCard from "@/components/PlayerCard";
 import TitleWithEdit from "@/components/TitleWithEdit";
 import theme from "@/theme";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { FlatList, View } from "react-native";
 import styled, { css, ThemeProvider } from "styled-components/native";
 
-type Teams = {
+export type Teams = {
     id: number,
     nome: string,
     fk_turmas: number
 }
 
-type Players = {
+export type Players = {
     id: number,
     nome: string,
     fk_time: number
 }
 
 export default function Players(){
-    
-    // Aqui eu uso o método do expo-router pra pegar os parametros que vem da rota
-    // sempre que voce passar parametros para uma rota, não se esqueca do id
+    /*
+        Aqui eu uso o método do expo-router pra pegar os parametros que vem da rota
+        sempre que voce passar parametros para uma rota, não se esqueca do id 
+    */
     const {groupId, title} = useLocalSearchParams<{groupId: string, title: string}>()
     const [teams, setTeams] = useState<Teams[]>([])
-    const [isActiveTeam, setIsActiveTeam] = useState<Teams>()
-    
+    const [isActiveTeam, setIsActiveTeam] = useState<Teams>() 
     const [players, setPlayers] = useState<Players[]>([])
 
     useEffect(()=>{
@@ -61,27 +62,35 @@ export default function Players(){
         }
     },[])
 
+    const deleteTeam = useCallback( async (team: Teams)=>{
+        try {
+            
+        } catch (error) {
+            console.error('Failed to delete team:', error);
+        }
+    },[])
+
+    /*  
+        Nesse caso eu precisei isolar a lógica do react-hook-forms
+        e suas validações dentro do componente TitleWithEdit e InputNewTeam porque 
+        existem outros inputs dentro dessa pagina, e não é legal deixar 
+        varias funções de submit dentro de uma mesma pagina.
+        Submit é a ação de enviar um formulario geralmente para uma rota
+        ou outra pagina, por si ela não é uma ação nociva ao sistema,
+        mais pela natureza do "envio" ter varios em um mesmo arquivo não é bom
+    */
+
     return(
         <ThemeProvider theme={theme}>
             <Container>
-            {/*  
-                Nesse caso eu precisei isolei a lógica do react-hook-forms
-                e suas validações dentro do componente TitleWithEdit porque 
-                existem outros inputs dentro dessa pagina, e não é legal deixar 
-                varias funções de submit dentro de uma mesma pagina.
-                Submit é a ação de enviar um formulario geralmente para uma rota
-                ou outra pagina, por si ela não é uma ação nociva ao sistema,
-                mais pela natureza do "envio" ter varios em um mesmo arquivo não é bom
-            */}
-            <TitleWithEdit groupId={parseInt(groupId)} title={title?.toString()} />
-            <Form>
-                <Input placeholder="Crie um novo time" autoCorrect={false} />
-                <ButtonIcon icon="add"/>
-            </Form>
+                <TitleWithEdit groupId={parseInt(groupId)} title={title?.toString()} />
+                <InputNewTeam groupId={parseInt(groupId)} atualizar={getTeams}/>
             { 
-                teams.length > 0 ?
+                //Esse conjunto só sera visto na tela caso exista algum time cadastrado no group
+                teams.length > 0 
+                ?
                 <TeamsView>
-                    <FlatList 
+                    <FlatList
                         data={teams}
                         keyExtractor={(item) => item.id.toString()}
                         horizontal={true}
@@ -96,45 +105,59 @@ export default function Players(){
                         showsVerticalScrollIndicator={false}
                         ListEmptyComponent={null}
                         ItemSeparatorComponent={()=> (
-                            <View style={{height: 10}}></View>
+                            <View style={{width: 10, height: 10}}></View>
                         )}
-                        />
+                    />
                     <NumberOfPlayers>{teams.length}</NumberOfPlayers>
                 </TeamsView>
                 :
                 null
             }
             {
-            teams.length > 0 ?
+                //Esse conjunto só sera visto na tela caso exista algum time cadastrado no group
+                teams.length > 0 
+                ?
                 <FlatList
-                style={{ flex: 1, height: '100%'}} 
-                data={players}
-                keyExtractor={(item) => item.id.toString()}
-                renderItem={({item}) => {
-                    return(<PlayerCard 
-                        name={item.nome}
-                    />)
-                }}
-                ListHeaderComponent={
-                    <Form>
-                        <Input placeholder="Adicionar novo jogador" autoCorrect={false} />
-                        <ButtonIcon icon="add"/>
-                    </Form>
-                }
-                ListHeaderComponentStyle={{marginBottom: 10}}
-                showsVerticalScrollIndicator={false}
-                ListEmptyComponent={
-                <EmptyListView>
-                    <EmptyListText>Coloque alguns jogadores!</EmptyListText>
-                </EmptyListView>}
-                ItemSeparatorComponent={()=> (
-                    <View style={{height: 10}}></View>
-                )}
+                    style={{ flex: 1, height: '100%'}} 
+                    data={players}
+                    keyExtractor={(item) => item.id.toString()}
+                    renderItem={({item}) => {
+                        return(<PlayerCard 
+                            name={item.nome}
+                        />)
+                    }}
+                    ListHeaderComponent={
+                        isActiveTeam ?  
+                        <InputNewPlayer 
+                            team={isActiveTeam}  
+                            atualizar={selectTeam}
+                        /> : null
+                    }
+                    ListHeaderComponentStyle={{marginBottom: 10}}
+                    showsVerticalScrollIndicator={false}
+                    ListEmptyComponent={
+                        <EmptyListView>
+                            <EmptyListText>Escolha um time e coloque os jogadores!</EmptyListText>
+                        </EmptyListView>}
+                    ItemSeparatorComponent={()=> (
+                            <View style={{height: 10}}></View>
+                    )}
                 />  
-            :
-            <EmptyListView>
-                <EmptyListText>Crie alguns times!</EmptyListText>
-            </EmptyListView>
+                :
+                <EmptyListView>
+                    <EmptyListText>Crie alguns times!</EmptyListText>
+                </EmptyListView>
+            }
+            {
+                isActiveTeam
+                && 
+                <Button  
+                    title="Excluir time"
+                    type="SECONDARY"
+                    onPress={()=>{
+                    
+                    }}
+                />
             }
             </Container>
         </ThemeProvider>
@@ -147,26 +170,14 @@ const Container = styled.View`
 
     padding: 24px;
 `
-
-const Form = styled.View`
-    width: 100%;
-
-    background-color: ${({theme}) => theme.COLORS.GRAY_500};
-    flex-direction: row;
-    justify-content: center;
-
-    border-radius: 6px;
-`
-
 const TeamsView = styled.View`
     width: 100%;
 
     flex-direction: row;
     align-items: center;
 
-    margin: 32px 0;
+    margin: 12px 0;
 `
-
 const NumberOfPlayers = styled.Text`
     ${({theme}) => css`
         color: ${theme.COLORS.WHITE};
@@ -182,7 +193,6 @@ const EmptyListView = styled.View`
     justify-content: center;
     align-items: center;
 `
-
 const EmptyListText = styled.Text`
     font-size: ${({theme}) => theme.FONT_SIZE.MD}px;
     color: ${({theme}) => theme.COLORS.WHITE};

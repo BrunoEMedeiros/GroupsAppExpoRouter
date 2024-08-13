@@ -160,7 +160,7 @@ export default function TitleWithEdit({ isActive=false, groupId, title}: Props){
 
 const Container = styled.View`
     width: 100%;
-    margin: 32px 0px;
+    margin: 12px 0px;
     gap: 8px;
 `
 const TitleBox = styled.View`
