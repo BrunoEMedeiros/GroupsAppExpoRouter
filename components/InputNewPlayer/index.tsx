@@ -3,7 +3,7 @@ import Input from "../Input"
 import ButtonIcon from "../ButtonIcon"
 import { Controller, useForm } from "react-hook-form";
 import { apiConfig } from "@/api/axios";
-import { Alert } from "react-native";
+import { Alert, KeyboardAvoidingView } from "react-native";
 import { Players, Teams } from "@/app/(players)";
 
 type Props = {
@@ -44,6 +44,7 @@ export default function InputNewPlayer({team, atualizar}: Props){
     }
     
     return(
+        <KeyboardAvoidingView>
         <Container>
             <Form>
             <Controller 
@@ -58,7 +59,7 @@ export default function InputNewPlayer({team, atualizar}: Props){
                     }}
                     render={({ field: { onChange, onBlur, value }}) => (
                         <Input       
-                            placeholder="Crie um novo time"
+                            placeholder="Coloque um jogador"
                             autoCorrect={false}
                             onBlur={onBlur}
                             onChangeText={onChange}
@@ -79,6 +80,7 @@ export default function InputNewPlayer({team, atualizar}: Props){
         )}
 
         </Container>
+        </KeyboardAvoidingView>
     )
 }
 

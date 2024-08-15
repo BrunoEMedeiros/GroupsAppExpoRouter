@@ -84,7 +84,7 @@ export default function InputNewTeam({groupId, atualizar}: Props){
 
 const Container = styled.View`
     width: 100%;
-    margin: 32px 0px;
+    margin: 28px 0px;
     gap: 8px;
 `
 const Form = styled.View`

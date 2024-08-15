@@ -1,14 +1,13 @@
 import { apiConfig } from "@/api/axios";
 import Button from "@/components/Button";
-import Filter from "@/components/Filter";
+import FilterList from "@/components/FilterList";
 import InputNewPlayer from "@/components/InputNewPlayer";
 import InputNewTeam from "@/components/InputNewTeam";
-import PlayerCard from "@/components/PlayerCard";
+import PlayersList from "@/components/PlayersList";
 import TitleWithEdit from "@/components/TitleWithEdit";
 import theme from "@/theme";
 import { useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useState } from "react";
-import { FlatList, View } from "react-native";
 import styled, { css, ThemeProvider } from "styled-components/native";
 
 export type Teams = {
@@ -30,7 +29,7 @@ export default function Players(){
     */
     const {groupId, title} = useLocalSearchParams<{groupId: string, title: string}>()
     const [teams, setTeams] = useState<Teams[]>([])
-    const [isActiveTeam, setIsActiveTeam] = useState<Teams>() 
+    const [isActiveTeam, setIsActiveTeam] = useState<Teams | null>() 
     const [players, setPlayers] = useState<Players[]>([])
 
     useEffect(()=>{
@@ -62,24 +61,39 @@ export default function Players(){
         }
     },[])
 
-    const deleteTeam = useCallback( async (team: Teams)=>{
+    const deleteTeam = useCallback(async (team: Teams)=>{
         try {
-            
+            const response = await apiConfig.delete(`/teams/${team.id}`)
+            if(response.status == 200){
+                getTeams()
+            }
         } catch (error) {
             console.error('Failed to delete team:', error);
         }
     },[])
 
-    /*  
-        Nesse caso eu precisei isolar a lógica do react-hook-forms
-        e suas validações dentro do componente TitleWithEdit e InputNewTeam porque 
-        existem outros inputs dentro dessa pagina, e não é legal deixar 
-        varias funções de submit dentro de uma mesma pagina.
-        Submit é a ação de enviar um formulario geralmente para uma rota
-        ou outra pagina, por si ela não é uma ação nociva ao sistema,
-        mais pela natureza do "envio" ter varios em um mesmo arquivo não é bom
-    */
+    const deletePlayer = useCallback( async (player: Players)=>{
+        try {
+            const response = await apiConfig.delete(`/teams/players/${player.id}`)
+            if(response.status == 200){
+                setPlayers(prevState => 
+                    prevState.filter(players => players.id != player.id))
+            }
 
+        } catch (error) {
+            console.error('Failed to delete player:', error);
+        }
+    },[])
+
+    /*  
+       Essa pagina é a mais completa do tanto ponto de vista de efeitos
+       visuais e funções do usuario.
+       Lembre-se que ela poderia ter sido feita de outra forma, porem
+       eu quis experimentar focar no design single page e colocar o maior numero
+       de ações e funcionalidades sem trocar de pagina.
+       Eu isolei o maximo de componentes para facilitar a testagem e manutenção do código
+       alem de tornar a pagina mais legivel
+    */
     return(
         <ThemeProvider theme={theme}>
             <Container>
@@ -88,60 +102,31 @@ export default function Players(){
             { 
                 //Esse conjunto só sera visto na tela caso exista algum time cadastrado no group
                 teams.length > 0 
-                ?
+                &&
                 <TeamsView>
-                    <FlatList
-                        data={teams}
-                        keyExtractor={(item) => item.id.toString()}
-                        horizontal={true}
-                        renderItem={({item}) =>{
-                            return(
-                            <Filter 
-                                title={item.nome} 
-                                isActive={item === isActiveTeam}
-                                onPress={()=> selectTeam(item)}
-                            />)
-                        }}
-                        showsVerticalScrollIndicator={false}
-                        ListEmptyComponent={null}
-                        ItemSeparatorComponent={()=> (
-                            <View style={{width: 10, height: 10}}></View>
-                        )}
+                    <FilterList 
+                        teams={teams}
+                        isActiveTeam={isActiveTeam}
+                        cardFuncion={selectTeam}
                     />
                     <NumberOfPlayers>{teams.length}</NumberOfPlayers>
                 </TeamsView>
-                :
-                null
+            }
+            {
+                isActiveTeam
+                && 
+                <InputNewPlayer 
+                    team={isActiveTeam}  
+                    atualizar={selectTeam}
+                />
             }
             {
                 //Esse conjunto só sera visto na tela caso exista algum time cadastrado no group
                 teams.length > 0 
                 ?
-                <FlatList
-                    style={{ flex: 1, height: '100%'}} 
-                    data={players}
-                    keyExtractor={(item) => item.id.toString()}
-                    renderItem={({item}) => {
-                        return(<PlayerCard 
-                            name={item.nome}
-                        />)
-                    }}
-                    ListHeaderComponent={
-                        isActiveTeam ?  
-                        <InputNewPlayer 
-                            team={isActiveTeam}  
-                            atualizar={selectTeam}
-                        /> : null
-                    }
-                    ListHeaderComponentStyle={{marginBottom: 10}}
-                    showsVerticalScrollIndicator={false}
-                    ListEmptyComponent={
-                        <EmptyListView>
-                            <EmptyListText>Escolha um time e coloque os jogadores!</EmptyListText>
-                        </EmptyListView>}
-                    ItemSeparatorComponent={()=> (
-                            <View style={{height: 10}}></View>
-                    )}
+                <PlayersList 
+                    players={players}
+                    cardFuncao={deletePlayer}
                 />  
                 :
                 <EmptyListView>
@@ -150,12 +135,13 @@ export default function Players(){
             }
             {
                 isActiveTeam
-                && 
-                <Button  
+                &&
+                <Button
                     title="Excluir time"
                     type="SECONDARY"
                     onPress={()=>{
-                    
+                        deleteTeam(isActiveTeam)
+                        setIsActiveTeam(null)
                     }}
                 />
             }
@@ -168,7 +154,7 @@ const Container = styled.View`
     flex: 1;
     background-color: ${({theme}) => theme.COLORS.GRAY_700};
 
-    padding: 24px;
+    padding: 28px;
 `
 const TeamsView = styled.View`
     width: 100%;
@@ -188,13 +174,13 @@ const NumberOfPlayers = styled.Text`
 const EmptyListView = styled.View`
     flex: 1;
 
-    height: 100%;
+    height: 100px;
 
     justify-content: center;
     align-items: center;
 `
 const EmptyListText = styled.Text`
     font-size: ${({theme}) => theme.FONT_SIZE.MD}px;
-    color: ${({theme}) => theme.COLORS.WHITE};
+    color: ${({theme}) => theme.COLORS.GRAY_300};
     font-family: ${({theme}) => theme.FONT_FAMILY.REGULAR};
 `
