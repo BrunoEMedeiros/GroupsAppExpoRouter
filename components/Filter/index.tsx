@@ -23,6 +23,7 @@ export default function Filter({isActive=false, title, ...rest}: Props){
     
     return(
         <Container 
+            testID="container-filter"
             isActive={isActive}
             {...rest} 
         >

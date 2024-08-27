@@ -14,7 +14,6 @@ type PropsButtonIcons = PressableProps & {
         não são passados diretamente pelo sistema, ao inves disso, fazemos um
         mapeamento da biblioteca.
     */
-
     icon: keyof typeof MaterialIcons.glyphMap
     type?: ButtonIconTypeStyleProps
 }

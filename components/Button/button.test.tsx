@@ -42,7 +42,7 @@ describe('Component: Button',()=>{
     });
 
     test('should be render a text label', ()=>{
-        // Testando se o botao renderiza com o texto da maneira que eu passo
+        // Testando se o botao renderiza com o texto que que eu passo
         const { getByText } = render(<ThemeProvider theme={theme}>
             <Button title='meu botao'/>
         </ThemeProvider>);

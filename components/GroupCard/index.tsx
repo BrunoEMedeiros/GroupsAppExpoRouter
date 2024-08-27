@@ -1,9 +1,10 @@
-import { Link } from "expo-router"
-import { UsersThree } from "phosphor-react-native"
-import { Alert, PressableProps } from "react-native"
-import styled from "styled-components/native"
-import ButtonIcon from "../ButtonIcon"
-import { apiConfig } from "@/api/axios"
+import React from 'react';
+import { PressableProps, Alert } from 'react-native';
+import styled from 'styled-components/native';
+import { Link } from 'expo-router';
+import ButtonIcon from '../ButtonIcon';
+import { apiConfig } from '@/api/axios';
+import { MaterialIcons } from '@expo/vector-icons';
 
 /*
     O truque aqui é tranformar o component todo em um objeto clicavel/pressionavel
@@ -13,18 +14,17 @@ import { apiConfig } from "@/api/axios"
     junto as os nossos parametros e o React entende que esse component terá os mesmos 
     eventos que um componente Pressable, ou seja, uma especie de botão
 */
-
 type Props = PressableProps & {
     groupId: number
     title: string
     funcao: Function
 }
+
 /* 
     Aqui alem de um "title" que é um parametro string normal, eu uso o
     ...rest(spread operator) que significa: qualquer outro parametro que venha do tipo
     PressableProps vai estar contido dentro dele
 */
-
 const deleteGroup = async (id: number, title: string, atualizarLista: Function) => {
     try {
         return Alert.alert(`Excluir grupo`,
@@ -66,10 +66,11 @@ export default function GroupCard({groupId, title, funcao, ...rest }: Props){
         <Link href={{
             pathname: "/(players)",
             params: {groupId: groupId, title: title}
-        }} asChild>
-            <Container>
+        }} asChild
+        >
+            <Container testID='link-to-details'>
                 <LeftBox>
-                    <Icon />
+                    <Icon name='groups' />
                     <Title>{title}</Title>
                 </LeftBox>
                 <ButtonIcon icon="delete" type="SECONDARY" onPress={()=> 
@@ -100,12 +101,12 @@ const Title = styled.Text`
     color: ${({ theme }) => theme.COLORS.GRAY_200};
     font-family: ${({ theme }) => theme.FONT_FAMILY.REGULAR};
 `
-const Icon = styled(UsersThree).attrs(({theme}) => ({
-    size: 36,
-    color: theme.COLORS.GREEN_700,
-    weight: 'fill'
+const Icon = styled(MaterialIcons).attrs(({ theme }) => ({
+    size: 34,
+    color: theme.COLORS.GREEN_700
 }))`
-    margin-right: 10px;
+    margin-left: 16px;
+    margin-right: 16px;
 `
 
 const LeftBox = styled.View`
